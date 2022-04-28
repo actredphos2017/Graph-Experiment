@@ -36,8 +36,13 @@ class ALGraph{
             arcnum = _arcnum;
             vertices.reserve(vexnum);
             int x, y, _weight;
-            for(int i = 0; i < vexnum; i ++)
+            for(int i = 0; i < vexnum; i ++){
                 cin >> vertices[i].data;
+                if(vertices[i].data == ' ' || vertices[i].data == '\n'){
+                    i --;
+                    continue;
+                }
+            }
             for(int i = 0; i < arcnum; i ++){
                 cin >> x >> y >> _weight;
                 vertices[x].arcs.push_back({y,_weight});

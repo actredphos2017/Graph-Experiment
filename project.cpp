@@ -26,10 +26,22 @@ I
 4 8 1
 */
 
+void visit(VertexType v){
+    cout << v << " ";
+}
+
 int main(){
     int vernum, arcnum;
     cin >> vernum >> arcnum;
-    ALGraph al(vernum,arcnum);
-    al.output();
+    ALGraph al;
+    al.Vertices_Output();
+    al.Degree_Output();
+    cout << "DFS: ";
+    al.DFS(0, visit);
+    cout << endl;
+    cout << "BFS: ";
+    al.BFS(0, visit);
+    cout << endl;
+    system("pause");
     return 0;
 }

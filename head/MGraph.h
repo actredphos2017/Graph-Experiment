@@ -3,60 +3,68 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <map>
 
 using namespace std;
-class ArcNode{
+
+typedef char                                    VertexType;
+typedef int                                     Vertex;
+typedef int                                     WeightType;
+typedef map<Vertex, map<Vertex, WeightType>>    AdjMap;
+typedef enum{Directed, Disdirected}             GraphType;
+
+class VNode{
+    friend class MGraph;
+    private:
+        Vertex      loc;
+        VertexType  data;
+        MGraph*     father;
     public:
-        int adjvex;
-        int weight;
+        int degree(){
+            int r = 0;
+            for(int i = 0; i < this->father->vexnum; i ++)
+                if(this->father->arcs.find(this->loc) != this->father->arcs.endl())
+                    if(this->father->arcs[this->loc].find(i) != this->father->arcs[this->loc].endl())
+                        r ++;
+            return r;
+        }
 };
 
-#define VertexType char //顶点元素类型
-class VNode{
+class MGraph{
+    friend class VNode;
+    private:
+        AdjMap  arcs;
+        vector<VNode> vertices;
+        Vertex  vexnum;
+        int     arcnum;
+        bool*   visited;
+        bool    is_Directed_Graph;
     public:
-        VertexType data;
-        vector<ArcNode>  arcs;
-}; 
-
-typedef vector<VNode> AdjList;
-class ALGraph{
-    public:
-        AdjList vertices;
-        AdjList converse_vertices;
-        int vexnum;
-        int arcnum;
-        bool *visited;
-    public:
-        ALGraph(){
+        MGraph(GraphType gt){
+            this->VNode = NULL;
             this->vexnum = 0;
             this->arcnum = 0;
             this->visited = NULL;
+            this->is_Directed_Graph = gt == Directed;
         }
-        void Directed_Create(int _vexnum, int _arcnum){
-            int x, y, w;
+        void Create(int _vexnum, int _arcnum){
+            Vertex x, y;
+            WeightType w;
             this->vexnum = _vexnum;
             this->arcnum = _arcnum;
-            this->vertices.resize(this->vexnum);
             for(int i = 0; i < this->vexnum; i ++)
                 cin >> this->vertices[i].data;
-            for(int i = 0; i < this->arcnum; i ++){
-                cin >> x >> y >> w;
-                this->vertices[x].arcs.push_back(ArcNode{y, w});
-            }
-            this->visited = new bool[this->vexnum];
-        }
-        void Disdirected_Create(int _vexnum, int _arcnum){
-            int x, y, w;
-            this->vexnum = _vexnum;
-            this->arcnum = _arcnum;
-            this->vertices.resize(this->vexnum);
-            for(int i = 0; i < this->vexnum; i ++)
-                cin >> this->vertices[i].data;
-            for(int i = 0; i < this->arcnum; i ++){
-                cin >> x >> y >> w;
-                this->vertices[x].arcs.push_back(ArcNode{y, w});
-                this->vertices[y].arcs.push_back(ArcNode{x, w});
-            }
+            if(this->is_Directed_Graph)
+                for(int i = 0; i < this->arcnum; i ++){
+                    cin >> x >> y >> w;
+                    arcs[x][y] = w;
+                }
+            else
+                for(int i = 0; i < this->arcnum; i ++){
+                    cin >> x >> y >> w;
+                    arcs[x][y] = w;
+                    arcs[y][x] = w;
+                }
             this->visited = new bool[this->vexnum];
         }
         void Vertices_Output(){
@@ -70,7 +78,7 @@ class ALGraph{
         }
         void Degree_Output(){
             for(int i = 0; i < this->vexnum; i ++)
-                cout << this->vertices[i].data << "'s Degree: " << this->vertices[i].arcs.size() << endl;
+                cout << this->vertices[i].data << "'s Degree: " << this->vertices[i].degree() << endl;
             return;
         }
         void Reset_Visited(){

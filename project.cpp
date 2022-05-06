@@ -33,7 +33,8 @@ void visit(VertexType v){
 int main(){
     int vernum, arcnum;
     cin >> vernum >> arcnum;
-    ALGraph al;
+    ALGraph al(Disdirected);
+    al.Create(vernum, arcnum);
     al.Vertices_Output();
     al.Degree_Output();
     cout << "DFS: ";

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "head/vertex_map.h"
+#include "head/Graph.h"
 
 using namespace std;
 
@@ -25,10 +25,11 @@ I
 3 7 1
 4 8 1
 */
-
 void visit(VertexType v){
     cout << v << " ";
 }
+
+#if 1
 
 int main(){
     int vernum, arcnum;
@@ -46,3 +47,24 @@ int main(){
     system("pause");
     return 0;
 }
+
+#else
+
+int main(){
+    int vernum, arcnum;
+    cin >> vernum >> arcnum;
+    MGraph mg(Disdirected);
+    mg.Create(vernum, arcnum);
+    mg.Vertices_Output();
+    mg.Degree_Output();
+    cout << "DFS: ";
+    mg.DFS(0, visit);
+    cout << endl;
+    cout << "BFS: ";
+    mg.BFS(0, visit);
+    cout << endl;
+    system("pause");
+    return 0;
+}
+
+#endif

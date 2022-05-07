@@ -25,11 +25,35 @@ I
 3 7 1
 4 8 1
 */
+
+/*
+9 10
+A
+B
+C
+D
+E
+F
+G
+H
+I
+0 1 
+0 2 
+0 3 
+1 4 
+1 5 
+2 3 
+2 6 
+3 6 
+3 7 
+4 8 
+*/
+
 void visit(VertexType v){
     cout << v << " ";
 }
 
-#if 1
+#if 0
 
 int main(){
     int vernum, arcnum;
@@ -45,6 +69,17 @@ int main(){
     al.BFS(0, visit);
     cout << endl;
     system("pause");
+    return 0;
+}
+
+#elif 1
+
+int main(){
+    int vernum, arcnum;
+    cin >> vernum >> arcnum;
+    OLGraph ol;
+    ol.Create(vernum, arcnum);
+    ol.Degree_Output();
     return 0;
 }
 

@@ -47,7 +47,7 @@ void ALGraph::Create(Vertex _vexnum, Arc _arcnum){
 
 void ALGraph::Vertices_Output(){
     for(Vertex i = 0; i < this->vexnum; i ++){
-        cout << this->vertices[i].data;
+        cout << " " << this->vertices[i].data;
         for(Arc j = 0; j < this->vertices[i].arcs.size(); j ++)
             cout << " -> " << this->vertices[this->vertices[i].arcs[j].adjvex].data;
         cout << endl;

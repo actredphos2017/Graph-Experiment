@@ -27,16 +27,14 @@ typedef int                                         Arc;
 typedef int                                         WeightType;
 typedef enum{Directed, Disdirected}                 GraphType;
 
-//邻接表节点
-class ALGraph_VNode{
+class ALGraph_VNode{ //邻接表节点
     friend class ALGraph;
     private:
         VertexType      data;
         vector<ALGraph_ArcNode> arcs;
 };
 
-//邻接表弧
-class ALGraph_ArcNode{
+class ALGraph_ArcNode{ //邻接表弧
     friend class ALGraph;
     private:
         Arc         adjvex;
@@ -45,8 +43,7 @@ class ALGraph_ArcNode{
         ALGraph_ArcNode(Arc adjvex, WeightType weight);
 };
 
-//邻接表图
-class ALGraph{
+class ALGraph{ //邻接表图
     friend class ALGraph_VNode;
     friend class ALGraph_ArcNode;
     public:
@@ -67,8 +64,7 @@ class ALGraph{
         void BFS(Vertex v, void (*visit)(VertexType));
 };
 
-//邻接矩阵节点
-class MGraph_VNode{
+class MGraph_VNode{ //邻接矩阵节点
     friend class MGraph;
     private:
         Vertex      loc;
@@ -76,8 +72,7 @@ class MGraph_VNode{
         MGraph*     father;
 };
 
-//邻接矩阵图
-class MGraph{
+class MGraph{ //邻接矩阵图
     friend class MGraph_VNode;
     private:
         map<Vertex, map<Vertex, WeightType>>    adj_map;
@@ -98,8 +93,7 @@ class MGraph{
         void BFS(Vertex v, void (*visit)(VertexType));
 };
 
-//十字链表弧
-class OLGraph_ArcNode{
+class OLGraph_ArcNode{ //十字链表弧
     friend class OLGraph;
     friend class OLGraph_VNode;
     private:
@@ -111,8 +105,7 @@ class OLGraph_ArcNode{
         OLGraph_ArcNode(Vertex _tailvex, Vertex _headvex);
 };
 
-//十字链表节点
-class OLGraph_VNode{
+class OLGraph_VNode{ //十字链表节点
     friend class OLGraph;
     friend class OLGraph_ArcNode;
     private:
@@ -121,16 +114,15 @@ class OLGraph_VNode{
         OLGraph_ArcNode*    firstin;
         OLGraph_ArcNode*    firstout;
         OLGraph*            father;
-        OLGraph_ArcNode* hfind(Vertex _headvex); //判断出度是否存在
-        OLGraph_ArcNode* tfind(Vertex _tailvex); //判断入度是否存在
-        void add_tail(OLGraph_ArcNode* _tp); //添加入度
-        void add_head(OLGraph_ArcNode* _hp); //添加出度
+        OLGraph_ArcNode* hfind(Vertex _headvex);
+        OLGraph_ArcNode* tfind(Vertex _tailvex);
+        void add_tail(OLGraph_ArcNode* _tp);
+        void add_head(OLGraph_ArcNode* _hp);
     public:
         void add_arc(Vertex _headvex);
 };
 
-//十字链表图
-class OLGraph{
+class OLGraph{ //十字链表图
     friend class OLGraph_ArcNode;
     friend class OLGraph_VNode;
     private:

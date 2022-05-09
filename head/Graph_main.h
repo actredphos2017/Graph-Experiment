@@ -1,5 +1,3 @@
-#pragma once
-
 ALGraph_ArcNode::ALGraph_ArcNode(Arc adjvex, WeightType weight){
     this->adjvex = adjvex;
     this->weight = weight;
@@ -12,7 +10,7 @@ ALGraph::ALGraph(GraphType gt){
     this->is_Directed_Graph = gt == Directed;
 }
 
-void ALGraph::Create(Vertex _vexnum, Arc _arcnum){
+void ALGraph::Create(Vertex _vexnum, Arc _arcnum, ArcType at){
     Vertex x, y;
     WeightType w;
     this->vexnum = _vexnum;
@@ -24,7 +22,11 @@ void ALGraph::Create(Vertex _vexnum, Arc _arcnum){
         cin >> this->vertices[i].data;
     if(this->is_Directed_Graph)
         for(Arc i = 0; i < this->arcnum; i ++){
-            cin >> x >> y >> w;
+            cin >> x >> y;
+            if(at == Weighted)
+                cin >> w;
+            else
+                w = 1;
             if(!hash[x][y]){
                 this->vertices[x].arcs.push_back(ALGraph_ArcNode(y, w));
                 this->converse_vertices[y].arcs.push_back(ALGraph_ArcNode(x, w));
@@ -33,7 +35,11 @@ void ALGraph::Create(Vertex _vexnum, Arc _arcnum){
         }
     else
         for(Arc i = 0; i < this->arcnum; i ++){
-            cin >> x >> y >> w;
+            cin >> x >> y;
+            if(at == Weighted)
+                cin >> w;
+            else
+                w = 1;
             if(!hash[x>y?y:x][x>y?x:y]){
                 this->vertices[x].arcs.push_back(ALGraph_ArcNode(y, w));
                 this->converse_vertices[y].arcs.push_back(ALGraph_ArcNode(x, w));
@@ -108,7 +114,7 @@ MGraph::MGraph(GraphType gt){
     this->is_Directed_Graph = gt == Directed;
 }
 
-void MGraph::Create(Vertex _vexnum, int _arcnum){
+void MGraph::Create(Vertex _vexnum, int _arcnum, ArcType at){
     Vertex x, y;
     WeightType w;
     this->vexnum = _vexnum;
@@ -121,12 +127,20 @@ void MGraph::Create(Vertex _vexnum, int _arcnum){
     }
     if(this->is_Directed_Graph)
         for(Arc i = 0; i < this->arcnum; i ++){
-            cin >> x >> y >> w;
+            cin >> x >> y;
+            if(at == Weighted)
+                cin >> w;
+            else
+                w = 1;
             adj_map[x][y] = w;
         }
     else
         for(Arc i = 0; i < this->arcnum; i ++){
-            cin >> x >> y >> w;
+            cin >> x >> y;
+            if(at == Weighted)
+                cin >> w;
+            else
+                w = 1;
             adj_map[x][y] = w;
             adj_map[y][x] = w;
         }
@@ -195,15 +209,15 @@ void MGraph::BFS(Vertex v, void (*visit)(VertexType)){
     }
 }
 
-OLGraph_ArcNode::OLGraph_ArcNode(Vertex _tailvex, Vertex _headvex){
+CLGraph_ArcNode::CLGraph_ArcNode(Vertex _tailvex, Vertex _headvex){
     this->tailvex = _tailvex;
     this->headvex = _headvex;
     this->hlink = NULL;
     this->tlink = NULL;
 }
 
-OLGraph_ArcNode* OLGraph_VNode::hfind(Vertex _headvex){ //判断出度是否存在
-    OLGraph_ArcNode* p = this->firstin;
+CLGraph_ArcNode* CLGraph_VNode::hfind(Vertex _headvex){ //判断出度是否存在
+    CLGraph_ArcNode* p = this->firstin;
     while(p){
         if(p->headvex == _headvex)
             break;
@@ -212,8 +226,8 @@ OLGraph_ArcNode* OLGraph_VNode::hfind(Vertex _headvex){ //判断出度是否存�
     return p;
 }
 
-OLGraph_ArcNode* OLGraph_VNode::tfind(Vertex _tailvex){ //判断入度是否存在
-    OLGraph_ArcNode* p = this->firstout;
+CLGraph_ArcNode* CLGraph_VNode::tfind(Vertex _tailvex){ //判断入度是否存在
+    CLGraph_ArcNode* p = this->firstout;
     while(p){
         if(p->tailvex == _tailvex)
             break;
@@ -222,44 +236,46 @@ OLGraph_ArcNode* OLGraph_VNode::tfind(Vertex _tailvex){ //判断入度是否存�
     return p;
 }
 
-void OLGraph_VNode::add_tail(OLGraph_ArcNode* _tp){ //添加入度
+void CLGraph_VNode::add_tail(CLGraph_ArcNode* _tp){ //添加入度
     if(!this->firstin)
         firstin = _tp;
     else{
-        OLGraph_ArcNode* p = this->firstin;
+        CLGraph_ArcNode* p = this->firstin;
         while(p->tlink)
             p = p->tlink;
         p->tlink = _tp;
     }
 }
 
-void OLGraph_VNode::add_head(OLGraph_ArcNode* _hp){ //添加出度
+void CLGraph_VNode::add_head(CLGraph_ArcNode* _hp){ //添加出度
     if(!this->firstout)
         firstout = _hp;
     else{
-        OLGraph_ArcNode* p = this->firstout;
+        CLGraph_ArcNode* p = this->firstout;
         while(p->hlink)
             p = p->hlink;
         p->hlink = _hp;
     }
 }
 
-void OLGraph_VNode::add_arc(Vertex _headvex){
+void CLGraph_VNode::add_arc(Vertex _headvex){
     if(this->hfind(_headvex))
         return;
-    OLGraph_ArcNode *p = this->tfind(_headvex);
-    p = p ? p : new OLGraph_ArcNode(this->loc, _headvex);
+    CLGraph_ArcNode *p = this->tfind(_headvex);
+    p = p ? p : new CLGraph_ArcNode(this->loc, _headvex);
     this->add_head(p);
-    this->father->vertices[_headvex].add_tail(p);
+    if(!this->father->vertices[_headvex].hfind(p->tailvex))
+        this->father->vertices[_headvex].add_tail(p);
 }
 
-OLGraph::OLGraph(){
+
+CLGraph::CLGraph(){
     this->vexnum = 0;
     this->arcnum = 0;
     this->visited = NULL;
 }
 
-void OLGraph::Create(Vertex _vexnum, Arc _arcnum){
+void CLGraph::Create(Vertex _vexnum, Arc _arcnum){
     this->vexnum = _vexnum;
     this->arcnum = _arcnum;
     this->visited = new bool[this->vexnum];
@@ -276,14 +292,14 @@ void OLGraph::Create(Vertex _vexnum, Arc _arcnum){
     }
 }
 
-void OLGraph::Reset_Visited(){
-    for(Vertex i = 0; i < vexnum; i ++)
-        visited[i] = false;
+void CLGraph::Reset_Visited(){
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        this->visited[i] = false;
 }
 
-Vertex OLGraph::out_degree(Vertex v){
+Vertex CLGraph::out_degree(Vertex v){
     Vertex res = 0;
-    OLGraph_ArcNode* p = this->vertices[v].firstout;
+    CLGraph_ArcNode* p = this->vertices[v].firstout;
     while(p){
         res ++;
         p = p->hlink;
@@ -291,9 +307,9 @@ Vertex OLGraph::out_degree(Vertex v){
     return res;
 }
 
-Vertex OLGraph::in_degree(Vertex v){
+Vertex CLGraph::in_degree(Vertex v){
     Vertex res = 0;
-    OLGraph_ArcNode* p = this->vertices[v].firstin;
+    CLGraph_ArcNode* p = this->vertices[v].firstin;
     while(p){
         res ++;
         p = p->tlink;
@@ -301,8 +317,51 @@ Vertex OLGraph::in_degree(Vertex v){
     return res;
 }
 
-void OLGraph::Degree_Output(){
+void CLGraph::Degree_Output(){
     for(Vertex i = 0; i < this->vexnum; i ++)
         cout << this->vertices[i].data << "'s Degree: " << this->out_degree(i) << endl;
     cout << endl;
+}
+
+void CLGraph::Vertices_Output(){
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        cout << this->vertices[i].data << endl;
+    cout << endl;
+}
+
+void CLGraph::DFS(Vertex v, void (*visit)(VertexType)){
+    this->Reset_Visited();
+    this->DFS_main(v, visit);
+}
+
+void CLGraph::DFS_main(Vertex v, void (*visit)(VertexType)){
+    this->visited[v] = true;
+    visit(this->vertices[v].data);
+    CLGraph_ArcNode* p = this->vertices[v].firstout;
+    while(p){
+        if(!this->visited[p->headvex])
+            this->DFS_main(p->headvex, visit);
+        p = p->hlink;
+    }
+}
+
+void CLGraph::BFS(Vertex v, void (*visit)(VertexType)){
+    this->Reset_Visited();
+    queue<Vertex> q;
+    q.push(v);
+    this->visited[v] = true;
+    visit(this->vertices[v].data);
+    while(!q.empty()){
+        Vertex x = q.front();
+        q.pop();
+        CLGraph_ArcNode* p = this->vertices[x].firstout;
+        while(p)
+            if(!this->visited[p->headvex]){
+                q.push(p->headvex);
+                this->visited[p->headvex] = true;
+                visit(this->vertices[p->headvex].data);
+            }
+            else
+                p = p->hlink;
+    }
 }

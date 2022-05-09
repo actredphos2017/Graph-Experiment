@@ -8,12 +8,12 @@ void visit(VertexType v){
 }
 
 int main(){
-    system("clear");
+    system("cls");
     cout << "=========================" << endl << endl;
-    cout << " 1.é‚»æŽ¥è¡¨" << endl;
-    cout << " 2.é‚»æŽ¥çŸ©é˜µ" << endl;
-    cout << " 3.åå­—é“¾è¡¨" << endl;
-    cout << endl << " é€‰æ‹©åˆ›å»ºé“¾è¡¨çš„ç±»åž‹ï¼š";
+    cout << " 1.ÁÚ½Ó±í" << endl;
+    cout << " 2.ÁÚ½Ó¾ØÕó" << endl;
+    cout << " 3.Ê®×ÖÁ´±í" << endl;
+    cout << endl << " Ñ¡Ôñ´´½¨Á´±íµÄÀàÐÍ£º";
     int choice;
     cin >> choice;
     switch(choice){
@@ -22,13 +22,13 @@ int main(){
             cout << "=========================" << endl << endl;
             Vertex vexnum;
             Arc arcnum;
-            cout << " è¯·è¾“å…¥èŠ‚ç‚¹æ•°ï¼š";
+            cout << " ÇëÊäÈë½ÚµãÊý£º";
             cin >> vexnum;
-            cout << " è¯·è¾“å…¥å¼§æ•°ï¼š";
+            cout << " ÇëÊäÈë»¡Êý£º";
             cin >> arcnum;
             cout << endl;
             cout << "=========================" << endl << endl;
-            cout << " æ˜¯å¦ä¸ºæœ‰å‘å›¾ï¼Ÿ(Y/N) ";
+            cout << " ÊÇ·ñÎªÓÐÏòÍ¼£¿(Y/N) ";
             char tc;
             while(1){
                 cin >> tc;
@@ -36,40 +36,135 @@ int main(){
                     break;
             }
             GraphType gt = (tc == 'Y' || tc == 'y') ? Directed : Disdirected;
+            cout << endl;
+            cout << " »¡ÊÇ·ñÓÐÈ¨£¿(Y/N) ";
+            while(1){
+                cin >> tc;
+                if(tc == 'y' || tc == 'Y' || tc == 'N' || tc == 'n')
+                    break;
+            }
+            ArcType at = (tc == 'Y' || tc == 'y') ? Weighted : Unweighted;
             ALGraph al(gt);
-            cout << " å¼€å§‹æ‰§è¡Œ Create å‡½æ•°" << endl;
-            cout << " å…ˆè¾“å…¥å„ä¸ªèŠ‚ç‚¹çš„å€¼(charåž‹)" << endl;
-            cout << " éšåŽæŒ‰é¡ºåºè¾“å…¥ \"å‡ºèŠ‚ç‚¹ä¸‹æ ‡ å…¥èŠ‚ç‚¹ä¸‹æ ‡ æƒå€¼\"" << endl;
-            al.Create(vexnum, arcnum);
+            cout << " ¿ªÊ¼Ö´ÐÐ Create º¯Êý" << endl;
+            cout << " ÏÈÊäÈë¸÷¸ö½ÚµãµÄÖµ(charÐÍ)" << endl;
+            if(at == Weighted)
+                cout << " Ëæºó°´Ë³ÐòÊäÈë \"³ö½ÚµãÏÂ±ê Èë½ÚµãÏÂ±ê È¨Öµ\"" << endl;
+            else
+                cout << " Ëæºó°´Ë³ÐòÊäÈë \"³ö½ÚµãÏÂ±ê Èë½ÚµãÏÂ±ê\"" << endl;
+            al.Create(vexnum, arcnum, at);
             cout << "=========================" << endl << endl;
-            cout << " é‚»æŽ¥è¡¨ï¼š" << endl;
+            cout << " ÁÚ½Ó±í£º" << endl;
             al.Vertices_Output();
             cout << endl;
-            cout << " å„èŠ‚ç‚¹çš„åº¦ï¼š" << endl;
+            cout << " ¸÷½ÚµãµÄ¶È£º" << endl;
             al.Degree_Output();
             cout << "=========================" << endl << endl;
-            cout << " è¯·è¾“å…¥æ·±åº¦ä¼˜å…ˆéåŽ†çš„å¼€å§‹èŠ‚ç‚¹ä¸‹æ ‡ï¼š";
+            cout << " ÇëÊäÈëÉî¶ÈÓÅÏÈ±éÀúµÄ¿ªÊ¼½ÚµãÏÂ±ê£º";
             Vertex vt;
             cin >> vt;
             al.DFS(vt, visit);
             cout << endl;
             cout << "=========================" << endl << endl;
-            cout << " è¯·è¾“å…¥å¹¿åº¦ä¼˜å…ˆéåŽ†çš„å¼€å§‹èŠ‚ç‚¹ä¸‹æ ‡ï¼š";
+            cout << " ÇëÊäÈë¹ã¶ÈÓÅÏÈ±éÀúµÄ¿ªÊ¼½ÚµãÏÂ±ê£º";
             cin >> vt;
             al.BFS(vt, visit);
             cout << endl;
             break;
         }
         case 2:{
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            Vertex vexnum;
+            Arc arcnum;
+            cout << " ÇëÊäÈë½ÚµãÊý£º";
+            cin >> vexnum;
+            cout << " ÇëÊäÈë»¡Êý£º";
+            cin >> arcnum;
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " ÊÇ·ñÎªÓÐÏòÍ¼£¿(Y/N) ";
+            char tc;
+            while(1){
+                cin >> tc;
+                if(tc == 'y' || tc == 'Y' || tc == 'N' || tc == 'n')
+                    break;
+            }
+            GraphType gt = (tc == 'Y' || tc == 'y') ? Directed : Disdirected;
+            MGraph mg(gt);
+            cout << " ÊÇ·ñÎªÓÐÈ¨£¿(Y/N) ";
+            while(1){
+                cin >> tc;
+                if(tc == 'y' || tc == 'Y' || tc == 'N' || tc == 'n')
+                    break;
+            }
+            ArcType at = (tc == 'Y' || tc == 'y') ? Weighted : Unweighted;
+            cout << " ¿ªÊ¼Ö´ÐÐ Create º¯Êý" << endl;
+            cout << " ÏÈÊäÈë¸÷¸ö½ÚµãµÄÖµ(charÐÍ)" << endl;
+            if(at == Weighted)
+                cout << " Ëæºó°´Ë³ÐòÊäÈë \"³ö½ÚµãÏÂ±ê Èë½ÚµãÏÂ±ê È¨Öµ\"" << endl;
+            else
+                cout << " Ëæºó°´Ë³ÐòÊäÈë \"³ö½ÚµãÏÂ±ê Èë½ÚµãÏÂ±ê\"" << endl;
+            mg.Create(vexnum, arcnum, at);
+            cout << "=========================" << endl << endl;
+            cout << " ÁÚ½Ó¾ØÕó£º" << endl;
+            mg.Vertices_Output();
+            cout << endl;
+            cout << " ¸÷½ÚµãµÄ¶È£º" << endl;
+            mg.Degree_Output();
+            cout << "=========================" << endl << endl;
+            cout << " ÇëÊäÈëÉî¶ÈÓÅÏÈ±éÀúµÄ¿ªÊ¼½ÚµãÏÂ±ê£º";
+            Vertex vt;
+            cin >> vt;
+            mg.DFS(vt, visit);
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " ÇëÊäÈë¹ã¶ÈÓÅÏÈ±éÀúµÄ¿ªÊ¼½ÚµãÏÂ±ê£º";
+            cin >> vt;
+            mg.BFS(vt, visit);
+            cout << endl;
             break;
         }
         case 3:{
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            Vertex vexnum;
+            Arc arcnum;
+            cout << " ÇëÊäÈë½ÚµãÊý£º";
+            cin >> vexnum;
+            cout << " ÇëÊäÈë»¡Êý£º";
+            cin >> arcnum;
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " Ê®×ÖÁ´±í±ØÎªÓÐÏòÎÞÈ¨Í¼ " << endl;
+            cout << " ¿ªÊ¼Ö´ÐÐ Create º¯Êý" << endl;
+            cout << " ÏÈÊäÈë¸÷¸ö½ÚµãµÄÖµ(charÐÍ)" << endl;
+            cout << " Ëæºó°´Ë³ÐòÊäÈë \"³ö½ÚµãÏÂ±ê Èë½ÚµãÏÂ±ê\"" << endl;
+            CLGraph cl;
+            cl.Create(vexnum, arcnum);
+            cout << "=========================" << endl << endl;
+            cout << " Ê®×ÖÁ´±í£º" << endl;
+            cl.Vertices_Output();
+            cout << endl;
+            cout << " ¸÷½ÚµãµÄ¶È£º" << endl;
+            cl.Degree_Output();
+            cout << "=========================" << endl << endl;
+            cout << " ÇëÊäÈëÉî¶ÈÓÅÏÈ±éÀúµÄ¿ªÊ¼½ÚµãÏÂ±ê£º";
+            Vertex vt;
+            cin >> vt;
+            cl.DFS(vt, visit);
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " ÇëÊäÈë¹ã¶ÈÓÅÏÈ±éÀúµÄ¿ªÊ¼½ÚµãÏÂ±ê£º";
+            cin >> vt;
+            cl.BFS(vt, visit);
+            cout << endl;
             break;
         }
         default:{
-            cout << " æŒ‡ä»¤æœªçŸ¥ï¼" << endl;
+            cout << " Ö¸ÁîÎ´Öª£¡" << endl;
             break;
         }
     }
+    system("pause");
     return 0;
 }

@@ -1,5 +1,3 @@
-#pragma once
-
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -17,20 +15,21 @@ class MGraph_VNode;
 class MGraph;
 
 //十字链表
-class OLGraph_ArcNode;
-class OLGraph;
-class OLGraph_VNode;
+class CLGraph_ArcNode;
+class CLGraph;
+class CLGraph_VNode;
 
 typedef char                                        VertexType;
 typedef int                                         Vertex;
 typedef int                                         Arc;
 typedef int                                         WeightType;
 typedef enum{Directed, Disdirected}                 GraphType;
+typedef enum{Weighted, Unweighted}                  ArcType;
 
 class ALGraph_VNode{ //邻接表节点
     friend class ALGraph;
     private:
-        VertexType      data;
+        VertexType              data;
         vector<ALGraph_ArcNode> arcs;
 };
 
@@ -55,7 +54,7 @@ class ALGraph{ //邻接表图
         bool    is_Directed_Graph;
     public:
         ALGraph(GraphType gt);
-        void Create(Vertex _vexnum, Arc _arcnum);
+        void Create(Vertex _vexnum, Arc _arcnum, ArcType at);
         void Vertices_Output();
         void Degree_Output();
         void Reset_Visited();
@@ -83,7 +82,7 @@ class MGraph{ //邻接矩阵图
         bool                                    is_Directed_Graph;
     public:
         MGraph(GraphType gt);
-        void Create(Vertex _vexnum, int _arcnum);
+        void Create(Vertex _vexnum, int _arcnum, ArcType at);
         Vertex degree(Vertex v);
         void Vertices_Output();
         void Degree_Output();
@@ -93,50 +92,54 @@ class MGraph{ //邻接矩阵图
         void BFS(Vertex v, void (*visit)(VertexType));
 };
 
-class OLGraph_ArcNode{ //十字链表弧
-    friend class OLGraph;
-    friend class OLGraph_VNode;
+class CLGraph_ArcNode{ //十字链表弧
+    friend class CLGraph;
+    friend class CLGraph_VNode;
     private:
         Vertex              tailvex;
         Vertex              headvex;
-        OLGraph_ArcNode*    hlink;
-        OLGraph_ArcNode*    tlink;
+        CLGraph_ArcNode*    hlink;
+        CLGraph_ArcNode*    tlink;
     public:
-        OLGraph_ArcNode(Vertex _tailvex, Vertex _headvex);
+        CLGraph_ArcNode(Vertex _tailvex, Vertex _headvex);
 };
 
-class OLGraph_VNode{ //十字链表节点
-    friend class OLGraph;
-    friend class OLGraph_ArcNode;
+class CLGraph_VNode{ //十字链表节点
+    friend class CLGraph;
+    friend class CLGraph_ArcNode;
     private:
         Vertex              loc;
         VertexType          data;
-        OLGraph_ArcNode*    firstin;
-        OLGraph_ArcNode*    firstout;
-        OLGraph*            father;
-        OLGraph_ArcNode* hfind(Vertex _headvex);
-        OLGraph_ArcNode* tfind(Vertex _tailvex);
-        void add_tail(OLGraph_ArcNode* _tp);
-        void add_head(OLGraph_ArcNode* _hp);
+        CLGraph_ArcNode*    firstin;
+        CLGraph_ArcNode*    firstout;
+        CLGraph*            father;
+        CLGraph_ArcNode* hfind(Vertex _headvex);
+        CLGraph_ArcNode* tfind(Vertex _tailvex);
+        void add_tail(CLGraph_ArcNode* _tp);
+        void add_head(CLGraph_ArcNode* _hp);
     public:
         void add_arc(Vertex _headvex);
 };
 
-class OLGraph{ //十字链表图
-    friend class OLGraph_ArcNode;
-    friend class OLGraph_VNode;
+class CLGraph{ //十字链表图
+    friend class CLGraph_ArcNode;
+    friend class CLGraph_VNode;
     private:
-        vector<OLGraph_VNode>   vertices;
+        vector<CLGraph_VNode>   vertices;
         Vertex                  vexnum;
         Arc                     arcnum;
         bool*                   visited;
     public:
-        OLGraph();
+        CLGraph();
         void Create(Vertex _vexnum, Arc _arcnum);
         void Reset_Visited();
         Vertex out_degree(Vertex v);
         Vertex in_degree(Vertex v);
         void Degree_Output();
+        void Vertices_Output();
+        void DFS(Vertex v, void (*visit)(VertexType));
+        void DFS_main(Vertex v, void (*visit)(VertexType));
+        void BFS(Vertex v, void (*visit)(VertexType));
 };
 
 #include "Graph_main.h"

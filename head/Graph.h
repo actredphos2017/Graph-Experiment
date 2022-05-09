@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -148,6 +150,10 @@ class CLGraph{ //十字链表图
         Vertex out_degree(Vertex v);
         Vertex in_degree(Vertex v);
         void Degree_Output();
+        void Vertices_Output();
+        void DFS(Vertex v, void (*visit)(VertexType));
+        void DFS_main(Vertex v, void (*visit)(VertexType));
+        void BFS(Vertex v, void (*visit)(VertexType));
         void FindInDegree(Vertex indegree[]);
         bool TopologicalSort(Vertex res[]);
         bool TopologicalSort(VertexType res[]);

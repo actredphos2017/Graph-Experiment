@@ -432,6 +432,46 @@ void CLGraph::FindInDegree(Vertex indegree[]){
     }
 }
 
+void CLGraph::DFS(Vertex v, void (*visit)(VertexType)){
+    this->Reset_Visited();
+    this->DFS_main(v, visit);
+    return;
+}
+
+void CLGraph::DFS_main(Vertex v, void (*visit)(VertexType)){
+    this->visited[v] = true;
+    visit(this->vertices[v].data);
+    CLGraph_ArcNode* p = this->vertices[v].firstout;
+    while(p){
+        if(!this->visited[p->headvex])
+            this->DFS_main(p->headvex, visit);
+        p = p->hlink;
+    }
+    return;
+}
+
+void CLGraph::BFS(Vertex v, void (*visit)(VertexType)){
+    this->Reset_Visited();
+    queue<Vertex> q;
+    q.push(v);
+    this->visited[v] = true;
+    visit(this->vertices[v].data);
+    while(!q.empty()){
+        Vertex u = q.front();
+        q.pop();
+        CLGraph_ArcNode* p = this->vertices[u].firstout;
+        while(p){
+            if(!this->visited[p->headvex]){
+                this->visited[p->headvex] = true;
+                visit(this->vertices[p->headvex].data);
+                q.push(p->headvex);
+            }
+            p = p->hlink;
+        }
+    }
+    return;
+}
+
 bool CLGraph::TopologicalSort(Vertex res[]){
     Vertex indegree[this->vexnum], count = 0;
     this->FindInDegree(indegree);
@@ -516,6 +556,7 @@ AMGraph_ArcNode* AMGraph::find_arc(Vertex iv, Vertex jv, bool &SameLoc){
             return p;
         else
             p = p->link[(int)SameLoc];
+    return NULL;
 }
 
 void AMGraph::Create(Vertex _vexnum, Arc _arcnum){

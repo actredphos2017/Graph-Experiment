@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include <map>
+#include <cstring>
 
 using namespace std;
 
@@ -18,6 +19,11 @@ class MGraph;
 class CLGraph_ArcNode;
 class CLGraph;
 class CLGraph_VNode;
+
+//邻接多重表
+class AMGraph;
+class AMGraph_VNode;
+class AMGraph_ArcNode;
 
 typedef char                                        VertexType;
 typedef int                                         Vertex;
@@ -61,6 +67,9 @@ class ALGraph{ //邻接表图
         void DFS(Vertex v, void (*visit)(VertexType));
         void DFS_main(Vertex v, void (*visit)(VertexType));
         void BFS(Vertex v, void (*visit)(VertexType));
+        void FindInDegree(Vertex indegree[]);
+        bool TopologicalSort(Vertex res[]);
+        bool TopologicalSort(VertexType res[]);
 };
 
 class MGraph_VNode{ //邻接矩阵节点
@@ -90,6 +99,9 @@ class MGraph{ //邻接矩阵图
         void DFS(Vertex v, void (*visit)(VertexType));
         void DFS_main(Vertex v, void (*visit)(VertexType));
         void BFS(Vertex v, void (*visit)(VertexType));
+        void FindInDegree(Vertex indegree[]);
+        bool TopologicalSort(Vertex res[]);
+        bool TopologicalSort(VertexType res[]);
 };
 
 class CLGraph_ArcNode{ //十字链表弧
@@ -140,8 +152,52 @@ class CLGraph{ //十字链表图
         void DFS(Vertex v, void (*visit)(VertexType));
         void DFS_main(Vertex v, void (*visit)(VertexType));
         void BFS(Vertex v, void (*visit)(VertexType));
+        void FindInDegree(Vertex indegree[]);
+        bool TopologicalSort(Vertex res[]);
+        bool TopologicalSort(VertexType res[]);
 };
 
+class AMGraph_ArcNode{
+    friend class AMGraph;
+    friend class AMGraph_VNode;
+    private:
+        bool mark;
+        Vertex vex[2];
+        AMGraph_ArcNode* link[2];
+    public:
+        AMGraph_ArcNode(Vertex ivex, Vertex jvex, bool SameLoc);
+};
+
+class AMGraph_VNode{
+    friend class AMGraph;
+    friend class AMGraph_ArcNode;
+    private:
+        Vertex loc;
+        VertexType data;
+        AMGraph_ArcNode* first_arc;
+        AMGraph* father;
+    public:
+        void push_arc(AMGraph_ArcNode* ap);
+        void add_arc(Vertex v);
+};
+
+class AMGraph{
+    friend class AMGraph_ArcNode;
+    friend class AMGraph_VNode;
+    private:
+        Vertex  vexnum;
+        Arc     arcnum;
+        vector<AMGraph_VNode> vertices;
+        bool* visited;
+        AMGraph_ArcNode* find_arc(Vertex iv, Vertex jv, bool &SameLoc);
+    public:
+        AMGraph();
+        void Create(Vertex _vexnum, Arc _arcnum);
+        void Reset_Visited();
+        void DFS(Vertex v, void (*visit)(VertexType));
+        void DFS_main(Vertex v, void (*visit)(VertexType));
+        void BFS(Vertex v, void (*visit)(VertexType));
+};
 
 ALGraph_ArcNode::ALGraph_ArcNode(Arc adjvex, WeightType weight){
     this->adjvex = adjvex;
@@ -252,6 +308,55 @@ void ALGraph::BFS(Vertex v, void (*visit)(VertexType)){
     return;
 }
 
+void ALGraph::FindInDegree(Vertex indegree[]){
+    memset(indegree, 0, sizeof(Vertex));
+    for(auto iter : this->vertices)
+        for(auto _iter : iter.arcs)
+            indegree[_iter.adjvex] ++;
+}
+
+bool ALGraph::TopologicalSort(Vertex res[]){
+    Vertex indegree[this->vexnum], count = 0;
+    this->FindInDegree(indegree);
+    vector<Vertex> v;
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        if(indegree[i] == 0)
+            v.push_back(i);
+    while(!v.empty()){
+        res[count ++] = v.back();
+        auto iter = this->vertices[v.back()].arcs.begin();
+        v.pop_back();
+        while(iter != this->vertices[v.back()].arcs.end()){
+            indegree[iter->adjvex] --;
+            if(indegree[iter->adjvex] == 0)
+                v.push_back(iter->adjvex);
+            iter ++;
+        }
+    }
+    return count == this->vexnum;
+}
+
+bool ALGraph::TopologicalSort(VertexType res[]){
+    Vertex indegree[this->vexnum], count = 0;
+    this->FindInDegree(indegree);
+    vector<Vertex> v;
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        if(indegree[i] == 0)
+            v.push_back(i);
+    while(!v.empty()){
+        res[count ++] = this->vertices[v.back()].data;
+        auto iter = this->vertices[v.back()].arcs.begin();
+        v.pop_back();
+        while(iter != this->vertices[v.back()].arcs.end()){
+            indegree[iter->adjvex] --;
+            if(indegree[iter->adjvex] == 0)
+                v.push_back(iter->adjvex);
+            iter ++;
+        }
+    }
+    return count == this->vexnum;
+}
+
 MGraph::MGraph(GraphType gt){
     this->vexnum = 0;
     this->arcnum = 0;
@@ -352,6 +457,55 @@ void MGraph::BFS(Vertex v, void (*visit)(VertexType)){
                         visit(this->vertices[i].data);
                     }
     }
+}
+
+void MGraph::FindInDegree(Vertex indegree[]){
+    memset(indegree, 0, this->vexnum * sizeof(Vertex));
+    for(auto iter = this->adj_map.begin(); iter != this->adj_map.end(); iter ++)
+        for(auto _iter = iter->second.begin(); _iter != iter->second.end(); _iter ++)
+            indegree[_iter->first] ++;
+}
+
+bool MGraph::TopologicalSort(Vertex res[]){
+    int indegree[this->vexnum], count = 0;
+    this->FindInDegree(indegree);
+    vector<Vertex> v;
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        if(indegree[i] == 0)
+            v.push_back(i);
+    while(!v.empty()){
+        Vertex temp = v.back();
+        v.pop_back();
+        res[count ++] = temp;
+        auto iter = this->adj_map[temp].begin();
+        while(iter != this->adj_map[temp].end()){
+            if((-- indegree[iter->first]) == 0)
+                v.push_back(iter->first);
+            iter ++;
+        }
+    }
+    return count == this->vexnum;
+}
+
+bool MGraph::TopologicalSort(VertexType res[]){
+    int indegree[this->vexnum], count = 0;
+    this->FindInDegree(indegree);
+    vector<Vertex> v;
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        if(indegree[i] == 0)
+            v.push_back(i);
+    while(!v.empty()){
+        Vertex temp = v.back();
+        v.pop_back();
+        res[count ++] = this->vertices[temp].data;
+        auto iter = this->adj_map[temp].begin();
+        while(iter != this->adj_map[temp].end()){
+            if((-- indegree[iter->first]) == 0)
+                v.push_back(iter->first);
+            iter ++;
+        }
+    }
+    return count == this->vexnum;
 }
 
 CLGraph_ArcNode::CLGraph_ArcNode(Vertex _tailvex, Vertex _headvex){
@@ -468,15 +622,21 @@ void CLGraph::Degree_Output(){
     cout << endl;
 }
 
-void CLGraph::Vertices_Output(){
-    for(Vertex i = 0; i < this->vexnum; i ++)
-        cout << this->vertices[i].data << endl;
-    cout << endl;
+void CLGraph::FindInDegree(Vertex indegree[]){
+    for(Vertex i = 0; i < this->vexnum; i ++){
+        indegree[i] = 0;
+        CLGraph_ArcNode* p = this->vertices[i].firstin;
+        while(p){
+            indegree[i] ++;
+            p = p->tlink;
+        }
+    }
 }
 
 void CLGraph::DFS(Vertex v, void (*visit)(VertexType)){
     this->Reset_Visited();
     this->DFS_main(v, visit);
+    return;
 }
 
 void CLGraph::DFS_main(Vertex v, void (*visit)(VertexType)){
@@ -488,6 +648,7 @@ void CLGraph::DFS_main(Vertex v, void (*visit)(VertexType)){
             this->DFS_main(p->headvex, visit);
         p = p->hlink;
     }
+    return;
 }
 
 void CLGraph::BFS(Vertex v, void (*visit)(VertexType)){
@@ -497,17 +658,170 @@ void CLGraph::BFS(Vertex v, void (*visit)(VertexType)){
     this->visited[v] = true;
     visit(this->vertices[v].data);
     while(!q.empty()){
-        Vertex x = q.front();
+        Vertex u = q.front();
         q.pop();
-        CLGraph_ArcNode* p = this->vertices[x].firstout;
-        while(p)
+        CLGraph_ArcNode* p = this->vertices[u].firstout;
+        while(p){
             if(!this->visited[p->headvex]){
-                q.push(p->headvex);
                 this->visited[p->headvex] = true;
                 visit(this->vertices[p->headvex].data);
+                q.push(p->headvex);
             }
-            else
-                p = p->hlink;
+            p = p->hlink;
+        }
+    }
+    return;
+}
+
+bool CLGraph::TopologicalSort(Vertex res[]){
+    Vertex indegree[this->vexnum], count = 0;
+    this->FindInDegree(indegree);
+    vector<Vertex> v;
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        if(indegree[i] == 0)
+            v.push_back(i);
+    while(!v.empty()){
+        res[count ++] = v.back();
+        CLGraph_ArcNode* p = this->vertices[v.back()].firstout;
+        v.pop_back();
+        while(p){
+            if((-- indegree[p->headvex]) == 0)
+                v.push_back(p->headvex);
+            p = p->hlink;
+        }
+    }
+    return count == this->vexnum;
+}
+
+bool CLGraph::TopologicalSort(VertexType res[]){
+    Vertex indegree[this->vexnum], count = 0;
+    this->FindInDegree(indegree);
+    vector<Vertex> v;
+    for(Vertex i = 0; i < this->vexnum; i ++)
+        if(indegree[i] == 0)
+            v.push_back(i);
+    while(!v.empty()){
+        res[count ++] = this->vertices[v.back()].data;
+        CLGraph_ArcNode* p = this->vertices[v.back()].firstout;
+        v.pop_back();
+        while(p){
+            if((-- indegree[p->headvex]) == 0)
+                v.push_back(p->headvex);
+            p = p->hlink;
+        }
+    }
+    return count == this->vexnum;
+}
+
+AMGraph_ArcNode::AMGraph_ArcNode(Vertex ivex, Vertex jvex, bool SameLoc){
+    this->mark = false;
+    this->link[0] = this->link[1] = NULL;
+    vex[0] = SameLoc ? ivex : jvex;
+    vex[1] = SameLoc ? jvex : ivex;
+}
+
+void AMGraph_VNode::push_arc(AMGraph_ArcNode* ap){
+    AMGraph_ArcNode* p = this->first_arc;
+    if(!p){
+        this->first_arc = ap;
+        return;
+    }
+    bool lpoint = p->vex[1] == this->loc;
+    if(lpoint != (ap->vex[1] == this->loc)){
+        throw("Error!");
+        return;
+    }
+    while(p->link[(int)lpoint])
+        p = p->link[(int)lpoint];
+    p->link[(int)lpoint] = ap;
+}
+
+void AMGraph_VNode::add_arc(Vertex v){
+    AMGraph_ArcNode* p = this->first_arc;
+    if(!p){
+        this->first_arc = new AMGraph_ArcNode(this->loc, v, true);
+        return;
+    }
+    bool lpoint = p->vex[1] == this->loc;
+    while(p->link[(int)lpoint])
+        p = p->link[(int)lpoint];
+    p->link[(int)lpoint] = new AMGraph_ArcNode(this->loc, v, !lpoint);
+    this->father->vertices[v].push_arc(p->link[(int)lpoint]);
+}
+
+AMGraph_ArcNode* AMGraph::find_arc(Vertex iv, Vertex jv, bool &SameLoc){
+    AMGraph_ArcNode* p = this->vertices[iv].first_arc;
+    SameLoc = p->vex[1] == iv;
+    while(p)
+        if(p->vex[(int)!SameLoc] == jv)
+            return p;
+        else
+            p = p->link[(int)SameLoc];
+    return NULL;
+}
+
+void AMGraph::Create(Vertex _vexnum, Arc _arcnum){
+    this->vexnum = _vexnum;
+    this->arcnum = _arcnum;
+    this->visited = new bool[this->vexnum];
+    this->vertices.resize(this->vexnum);
+    Vertex x, y;
+    for(Vertex i = 0; i < this->vexnum; i ++){
+        cin >> this->vertices[i].data;
+        this->vertices[i].father = this;
+        this->vertices[i].loc = i;
+    }
+    for(Arc i = 0; i < this->arcnum; i ++){
+        cin >> x >> y;
+        this->vertices[x].add_arc(y);
+    }
+}
+
+void AMGraph::Reset_Visited(){
+    for(Vertex i = 0; i < vexnum; i ++)
+        visited[i] = false;
+}
+
+void AMGraph::DFS(Vertex v, void (*visit)(VertexType)){
+    this->Reset_Visited();
+    this->DFS_main(v, visit);
+    return;
+}
+
+void AMGraph::DFS_main(Vertex v, void (*visit)(VertexType)){
+    visit(this->vertices[v].data);
+    this->visited[v] = true;
+    AMGraph_ArcNode* p = this->vertices[v].first_arc;
+    if(!p)
+        return;
+    bool lpoint = p->vex[1] == v;
+    while(p){
+        if(!this->visited[p->vex[(int)!lpoint]])
+            DFS_main(p->vex[(int)!lpoint], visit);
+        p = p->link[(int)lpoint];
+    }
+    return;
+}
+
+void AMGraph::BFS(Vertex v, void (*visit)(VertexType)){
+    this->Reset_Visited();
+    queue<Vertex> q;
+    q.push(v);
+    visit(this->vertices[v].data);
+    this->visited[v] = true;
+    while(!q.empty()){
+        v = q.front();
+        q.pop();
+        AMGraph_ArcNode* p = this->vertices[v].first_arc;
+        bool lpoint = p->vex[1] == v;
+        while(p){
+            if(!this->visited[p->vex[(int)!lpoint]]){
+                q.push(p->vex[(int)!lpoint]);
+                visit(this->vertices[p->vex[(int)!lpoint]].data);
+                visited[p->vex[(int)!lpoint]] = true;
+            }
+            p = p->link[(int)lpoint];
+        }
     }
 }
 
@@ -521,6 +835,7 @@ int main(){
     cout << " 1.邻接表" << endl;
     cout << " 2.邻接矩阵" << endl;
     cout << " 3.十字链表" << endl;
+    cout << " 4.邻接多重表" << endl;
     cout << endl << " 选择创建链表的类型：";
     int choice;
     cin >> choice;
@@ -577,6 +892,18 @@ int main(){
             cin >> vt;
             al.BFS(vt, visit);
             cout << endl;
+            cout << "=========================" << endl << endl;
+            if(gt == Directed){
+                VertexType topo[vexnum];
+                if(al.TopologicalSort(topo)){
+                    cout << " 图的拓扑排序：" << endl;
+                    for(auto i : topo)
+                        cout << i << " ";
+                    cout << endl;
+                }else
+                    cout << " 该有向图无拓扑排序" << endl;
+            }else
+                cout << " 无向图无拓扑排序" << endl;
             break;
         }
         case 2:{
@@ -630,6 +957,20 @@ int main(){
             cin >> vt;
             mg.BFS(vt, visit);
             cout << endl;
+            if(gt == Directed){
+                cout << "=========================" << endl << endl;
+                VertexType topo[vexnum];
+                if(mg.TopologicalSort(topo)){
+                    cout << " 拓扑排序：" << endl;
+                    for(auto i : topo)
+                        cout << i << " ";
+                    cout << endl;
+                }
+                else
+                    cout << " 该有向图无拓扑排序" << endl;
+            }
+            else
+                cout << " 无向图无拓扑排序" << endl;
             break;
         }
         case 3:{
@@ -650,9 +991,6 @@ int main(){
             CLGraph cl;
             cl.Create(vexnum, arcnum);
             cout << "=========================" << endl << endl;
-            cout << " 十字链表：" << endl;
-            cl.Vertices_Output();
-            cout << endl;
             cout << " 各节点的度：" << endl;
             cl.Degree_Output();
             cout << "=========================" << endl << endl;
@@ -665,6 +1003,48 @@ int main(){
             cout << " 请输入广度优先遍历的开始节点下标：";
             cin >> vt;
             cl.BFS(vt, visit);
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            VertexType topo[vexnum];
+            if(cl.TopologicalSort(topo)){
+                cout << " 本图的拓扑序列：";
+                for(auto i : topo)
+                    cout << i << " ";
+                cout << endl;
+            }else
+                cout << " 本图无拓扑序列" << endl;
+            break;
+        }
+        case 4:{
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            Vertex vexnum;
+            Arc arcnum;
+            cout << " 请输入节点数：";
+            cin >> vexnum;
+            cout << " 请输入弧数：";
+            cin >> arcnum;
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " 邻接多重表必为无向图 " << endl;
+            cout << " 开始执行 Create 函数" << endl;
+            cout << " 先输入各个节点的值(char型)" << endl;
+            cout << " 随后按顺序输入 \"出节点下标 入节点下标\"" << endl;
+            MGraph mg(Disdirected);
+            mg.Create(vexnum, arcnum, Unweighted);
+            cout << "=========================" << endl << endl;
+            cout << " 各节点的度：" << endl;
+            mg.Degree_Output();
+            cout << "=========================" << endl << endl;
+            cout << " 请输入深度优先遍历的开始节点下标：";
+            Vertex vt;
+            cin >> vt;
+            mg.DFS(vt, visit);
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " 请输入广度优先遍历的开始节点下标：";
+            cin >> vt;
+            mg.BFS(vt, visit);
             cout << endl;
             break;
         }

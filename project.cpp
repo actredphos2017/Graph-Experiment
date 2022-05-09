@@ -13,6 +13,7 @@ int main(){
     cout << " 1.邻接表" << endl;
     cout << " 2.邻接矩阵" << endl;
     cout << " 3.十字链表" << endl;
+    cout << " 4.邻接多重表" << endl;
     cout << endl << " 选择创建链表的类型：";
     int choice;
     cin >> choice;
@@ -69,6 +70,18 @@ int main(){
             cin >> vt;
             al.BFS(vt, visit);
             cout << endl;
+            cout << "=========================" << endl << endl;
+            if(gt == Directed){
+                VertexType topo[vexnum];
+                if(al.TopologicalSort(topo)){
+                    cout << " 图的拓扑排序：" << endl;
+                    for(auto i : topo)
+                        cout << i << " ";
+                    cout << endl;
+                }else
+                    cout << " 该有向图无拓扑排序" << endl;
+            }else
+                cout << " 无向图无拓扑排序" << endl;
             break;
         }
         case 2:{
@@ -122,6 +135,20 @@ int main(){
             cin >> vt;
             mg.BFS(vt, visit);
             cout << endl;
+            if(gt == Directed){
+                cout << "=========================" << endl << endl;
+                VertexType topo[vexnum];
+                if(mg.TopologicalSort(topo)){
+                    cout << " 拓扑排序：" << endl;
+                    for(auto i : topo)
+                        cout << i << " ";
+                    cout << endl;
+                }
+                else
+                    cout << " 该有向图无拓扑排序" << endl;
+            }
+            else
+                cout << " 无向图无拓扑排序" << endl;
             break;
         }
         case 3:{
@@ -142,9 +169,6 @@ int main(){
             CLGraph cl;
             cl.Create(vexnum, arcnum);
             cout << "=========================" << endl << endl;
-            cout << " 十字链表：" << endl;
-            cl.Vertices_Output();
-            cout << endl;
             cout << " 各节点的度：" << endl;
             cl.Degree_Output();
             cout << "=========================" << endl << endl;
@@ -157,6 +181,48 @@ int main(){
             cout << " 请输入广度优先遍历的开始节点下标：";
             cin >> vt;
             cl.BFS(vt, visit);
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            VertexType topo[vexnum];
+            if(cl.TopologicalSort(topo)){
+                cout << " 本图的拓扑序列：";
+                for(auto i : topo)
+                    cout << i << " ";
+                cout << endl;
+            }else
+                cout << " 本图无拓扑序列" << endl;
+            break;
+        }
+        case 4:{
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            Vertex vexnum;
+            Arc arcnum;
+            cout << " 请输入节点数：";
+            cin >> vexnum;
+            cout << " 请输入弧数：";
+            cin >> arcnum;
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " 邻接多重表必为无向图 " << endl;
+            cout << " 开始执行 Create 函数" << endl;
+            cout << " 先输入各个节点的值(char型)" << endl;
+            cout << " 随后按顺序输入 \"出节点下标 入节点下标\"" << endl;
+            MGraph mg(Disdirected);
+            mg.Create(vexnum, arcnum, Unweighted);
+            cout << "=========================" << endl << endl;
+            cout << " 各节点的度：" << endl;
+            mg.Degree_Output();
+            cout << "=========================" << endl << endl;
+            cout << " 请输入深度优先遍历的开始节点下标：";
+            Vertex vt;
+            cin >> vt;
+            mg.DFS(vt, visit);
+            cout << endl;
+            cout << "=========================" << endl << endl;
+            cout << " 请输入广度优先遍历的开始节点下标：";
+            cin >> vt;
+            mg.BFS(vt, visit);
             cout << endl;
             break;
         }

@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include <map>
+#include <cstring>
 
 using namespace std;
 
@@ -20,6 +21,11 @@ class MGraph;
 class OLGraph_ArcNode;
 class OLGraph;
 class OLGraph_VNode;
+
+//邻接多重表
+class AMGraph;
+class AMGraph_VNode;
+class AMGraph_ArcNode;
 
 typedef char                                        VertexType;
 typedef int                                         Vertex;
@@ -62,6 +68,9 @@ class ALGraph{ //邻接表图
         void DFS(Vertex v, void (*visit)(VertexType));
         void DFS_main(Vertex v, void (*visit)(VertexType));
         void BFS(Vertex v, void (*visit)(VertexType));
+        void FindInDegree(Vertex indegree[]);
+        bool TopologicalSort(Vertex res[]);
+        bool TopologicalSort(VertexType res[]);
 };
 
 class MGraph_VNode{ //邻接矩阵节点
@@ -91,6 +100,9 @@ class MGraph{ //邻接矩阵图
         void DFS(Vertex v, void (*visit)(VertexType));
         void DFS_main(Vertex v, void (*visit)(VertexType));
         void BFS(Vertex v, void (*visit)(VertexType));
+        void FindInDegree(Vertex indegree[]);
+        bool TopologicalSort(Vertex res[]);
+        bool TopologicalSort(VertexType res[]);
 };
 
 class OLGraph_ArcNode{ //十字链表弧
@@ -137,6 +149,51 @@ class OLGraph{ //十字链表图
         Vertex out_degree(Vertex v);
         Vertex in_degree(Vertex v);
         void Degree_Output();
+        void FindInDegree(Vertex indegree[]);
+        bool TopologicalSort(Vertex res[]);
+        bool TopologicalSort(VertexType res[]);
+};
+
+class AMGraph_ArcNode{
+    friend class AMGraph;
+    friend class AMGraph_VNode;
+    private:
+        bool mark;
+        Vertex vex[2];
+        AMGraph_ArcNode* link[2];
+    public:
+        AMGraph_ArcNode(Vertex ivex, Vertex jvex, bool SameLoc);
+};
+
+class AMGraph_VNode{
+    friend class AMGraph;
+    friend class AMGraph_ArcNode;
+    private:
+        Vertex loc;
+        VertexType data;
+        AMGraph_ArcNode* first_arc;
+        AMGraph* father;
+    public:
+        void push_arc(AMGraph_ArcNode* ap);
+        void add_arc(Vertex v);
+};
+
+class AMGraph{
+    friend class AMGraph_ArcNode;
+    friend class AMGraph_VNode;
+    private:
+        Vertex  vexnum;
+        Arc     arcnum;
+        vector<AMGraph_VNode> vertices;
+        bool* visited;
+        AMGraph_ArcNode* find_arc(Vertex iv, Vertex jv, bool &SameLoc);
+    public:
+        AMGraph();
+        void Create(Vertex _vexnum, Arc _arcnum);
+        void Reset_Visited();
+        void DFS(Vertex v, void (*visit)(VertexType));
+        void DFS_main(Vertex v, void (*visit)(VertexType));
+        void BFS(Vertex v, void (*visit)(VertexType));
 };
 
 #include "Graph_main.h"

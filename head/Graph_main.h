@@ -111,7 +111,7 @@ void ALGraph::FindInDegree(Vertex indegree[]){
 bool ALGraph::TopologicalSort(Vertex res[]){
     Vertex indegree[this->vexnum], count = 0;
     this->FindInDegree(indegree);
-    vector<int> v;
+    vector<Vertex> v;
     for(Vertex i = 0; i < this->vexnum; i ++)
         if(indegree[i] == 0)
             v.push_back(i);
